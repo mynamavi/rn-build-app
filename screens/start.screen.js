@@ -1,10 +1,15 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, Button, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import {
+    Text, View, 
+    StyleSheet, Button, 
+    TouchableWithoutFeedback, Keyboard, Alert}
+     from 'react-native';
 
 import Colors from '../constants/colors.constant';
 
 import Card from '../components/card.component';
 import Input from '../components/input.component';
+import NumberContainer from '../components/number.component';
 
 const StartScreen = (props) => {
     const [enteredValue, setEnteredValue] = useState('');
@@ -24,18 +29,32 @@ const StartScreen = (props) => {
 
     const confirmInputHandler = () =>{
         const chosenNumber = parseInt(enteredValue);
-        if(chosenNumber===NaN || chosenNumber <=0 || chosenNumber>99){
+        if( isNaN(chosenNumber) || chosenNumber <=0 || chosenNumber>99){
+            Alert.alert(
+                'Inavlid Number!', 
+                'Number has to be in between 1 to 99', 
+                [{text:'Okay', style:'destructive', onPress:resetInputHandler}]
+            )
             return;
         }
         setConfirmed(true);
         setSelectedNumber(chosenNumber);
         setEnteredValue('');
+        Keyboard.dismiss();
     }
 
     let confirmedOutput;
 
     if(confirmed){
-        confirmedOutput = <Text >Chosen Number: {selectedNumber} </Text>
+        confirmedOutput = <Card style={styles.summaryContainer}>
+                <Text>You Selected </Text>
+                <NumberContainer>{selectedNumber}</NumberContainer>
+                <Button 
+                    title='START GAME' 
+                    color={Colors.primary} 
+                    onPress = { ()=> props.onStartGame(selectedNumber) }
+                 />
+            </Card> 
     }
 
     return (
@@ -67,7 +86,11 @@ const StartScreen = (props) => {
                     
                 </View>
             </Card>
-            {confirmedOutput}
+
+            <View >
+                {confirmedOutput}
+            </View>
+            
 
         </View>
         </TouchableWithoutFeedback>
@@ -102,6 +125,10 @@ const styles = StyleSheet.create({
     },
     button:{
         width: 100,
+    },
+    summaryContainer: {
+        marginVertical:20,
+        alignItems:"center"
     }
 });
 
