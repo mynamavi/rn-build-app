@@ -10,6 +10,8 @@ import Colors from '../constants/colors.constant';
 import Card from '../components/card.component';
 import Input from '../components/input.component';
 import NumberContainer from '../components/number.component';
+import TitleText from '../components/titleText.component';
+import BoldText from '../components/boldText.component';
 
 const StartScreen = (props) => {
     const [enteredValue, setEnteredValue] = useState('');
@@ -61,10 +63,10 @@ const StartScreen = (props) => {
         <TouchableWithoutFeedback 
             onPress={()=>{ Keyboard.dismiss(); }}>
             <View style= {styles.screen}>
-            <Text style={styles.title}>Start a New Game!</Text>
+            <TitleText style={styles.title}>Start a New Game!</TitleText>
         
             <Card style={styles.inputContainer}>
-                <Text>Select a Number</Text>
+             <BoldText>Select a Number</BoldText>
                 <Input 
                     style={styles.input} 
                     blurOnSubmit 
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize:20,
-        marginVertical:10
+        marginVertical:10,
     },
     inputContainer:{
         width:300,
