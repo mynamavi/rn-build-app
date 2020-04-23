@@ -8,7 +8,8 @@ const BoldText = props => (
 const styles = StyleSheet.create({
     boldText: {
     fontFamily: 'open-sans-bold',
-    fontSize: 18
+    fontSize: 18,
+    marginBottom:12
   }  
 });
 
