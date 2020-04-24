@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import  {StyleSheet, Text, View, ScrollView, Alert} from 'react-native';
+import  {StyleSheet, Dimensions, View, ScrollView, Alert} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 
 import NumberContainer from '../components/number.component';
@@ -22,16 +22,28 @@ const generateRandomNumber =(min, max, exclude) =>{
 
 const GameScreen =(props)=>{
     const initialState = generateRandomNumber(1 , 100, props.userChoice);
-    const [currentGuess, setCurrentGuess] = useState(initialState);
-    
+    const [currentGuess, setCurrentGuess] = useState(initialState);    
     const [ pastGuess, setPastGuess] = useState([initialState]);
-
     const [ roundCount, setRoundCount] = useState(0);
+    const [availableDeviceWidth, setAvailableDeviceWidth] = useState(Dimensions.get('window').width);
+    const [availableDeviceHeight, setAvailableDeviceHeight] = useState(Dimensions.get('window').height);
 
     const currentLow = useRef(1);
     const currentHigh = useRef(100);
 
     const {userChoice, onGameOver } =  props;
+
+    useEffect( () => {
+        const updateLayout = () =>{
+            setAvailableDeviceWidth(Dimensions.get('window').width);
+            setAvailableDeviceHeight(Dimensions.get('window').height);
+        }
+    
+        Dimensions.addEventListener('change', updateLayout);
+        return() =>{
+            Dimensions.removeEventListener('change', updateLayout);
+        };
+    })
 
     useEffect( () => {
         if(currentGuess === userChoice){
@@ -66,9 +78,36 @@ const GameScreen =(props)=>{
             <BoldText> {value}</BoldText>
         </View>
     );
-        
-
-    return (
+    if(availableDeviceHeight<400){
+        return(
+            <View style={styles.screen}>
+                <BoldText>Opponent's Guess</BoldText>
+                
+                <View style={styles.smallHeightContent}>
+                    <View style={styles.smallHeightItem}>
+                        <MainButton onPress= {nextGuessHandler.bind(this, 'lower')} >
+                            <Ionicons color='white' name='md-remove' size={24} />
+                        </MainButton>
+                    </View>
+                    <View style={styles.smallHeightItem}>
+                        <NumberContainer>{currentGuess}</NumberContainer>
+                    </View>
+                    <View style={styles.smallHeightItem}>
+                        <MainButton onPress= {nextGuessHandler.bind(this, 'greater')} >
+                            <Ionicons color='white' name='md-add' size={24} />
+                        </MainButton>
+                    </View>
+                </View>
+                <View style={styles.list}>
+                    <ScrollView contentContainerStyle={styles.listContent}>
+                        {pastGuess.map((guess, index)=> renderListItem(guess, pastGuess.length - index))}
+                    </ScrollView>
+                </View>
+            </View>
+        );
+    }
+    
+    return(
         <View style={styles.screen}>
             <BoldText>Opponent's Guess</BoldText>
             <NumberContainer>{currentGuess}</NumberContainer>
@@ -87,6 +126,10 @@ const GameScreen =(props)=>{
             </View>
         </View>
     );
+    
+    
+
+
 
 }
 
@@ -99,17 +142,25 @@ const styles= StyleSheet.create({
     buttonContainer: {
         flexDirection:'row',
         justifyContent:'space-around',
-        marginTop:20,
+        marginTop:Dimensions.get('window').height>600 ? 30:6,
         width:300,
         maxWidth:'80%'
     },
+    smallHeightContent:{
+        flexDirection:'row',
+        justifyContent:'space-around',
+        alignItems:'center'
+    },
+    smallHeightItem:{
+        marginHorizontal:10
+    },
     list:{
-        width:'80%',
+        width:Dimensions.get('window').width>480 ? '70%': '80%',
         flex:1
     },
     listContent:{
         flexGrow:1,
-        alignItems:'center',
+        //alignItems:'center',
         justifyContent:'flex-end'
     },
     listItem: {
